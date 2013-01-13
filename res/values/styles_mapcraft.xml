@@ -33,8 +33,9 @@
         <item name="android:actionDropDownStyle">@style/mapcraft_DropDownNav</item>
         <item name="android:actionBarStyle">@style/mapcraft_transparent_ActionBar</item>
         <item name="android:panelBackground">@drawable/menu_hardkey_panel_mapcraft</item>
-        
-        
+        <item name="android:windowFullscreen">true</item>
+        <item name="android:windowActionBarOverlay">true</item>
+        <item name="android:windowActionModeOverlay">true</item> 
     </style>
 
     <style name="mapcraft_solid_ActionBar" parent="@style/Widget.Sherlock.ActionBar.Solid">
@@ -50,10 +51,10 @@
     </style>
 
     <style name="mapcraft_transparent_ActionBar" parent="@style/Widget.Sherlock.ActionBar">
-        <item name="background">@drawable/ab_transparent_mapcraft</item>
+        <item name="background">@drawable/ab_gray_trans_mapcraft</item>
         <item name="progressBarStyle">@style/mapcraft_ProgressBar</item>
         
-        <item name="android:background">@drawable/ab_transparent_mapcraft</item>
+        <item name="android:background">@drawable/ab_gray_trans_mapcraft</item>
         <item name="android:progressBarStyle">@style/mapcraft_ProgressBar</item>
     </style>
 	
