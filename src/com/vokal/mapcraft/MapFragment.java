@@ -1,7 +1,9 @@
 package com.vokal.mapcraft;
 
+import android.graphics.*;
 import android.os.Bundle;
 import android.view.*;
+import android.util.Log;
 
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -19,19 +21,19 @@ import org.osmdroid.views.MapView;
 import com.vokal.mapcraft.tileprovider.OverviewerTileSource;
 
 public class MapFragment extends Fragment {
+    static final String TAG = MapFragment.class.getSimpleName();
     MapView mMap;
-    BoundingBoxE6 mLastCenter = null;
+    int mLastZoom         = 0;
+    IGeoPoint mLastCenter = null;
 
     MapListener mMapListener = new MapListener() {
         public boolean onScroll(ScrollEvent aScroll) {
-            //TODO THIS DOESN:T WORK
-            mLastCenter = mMap.getBoundingBox();
-                
+            mLastCenter = mMap.getProjection().fromPixels(mMap.getWidth() / 2, mMap.getHeight() / 2);        
             return true;
         }
 
         public boolean onZoom(ZoomEvent aZoom) {
-            mLastCenter = mMap.getBoundingBox();
+            mLastZoom = aZoom.getZoomLevel();
             return true;
         }
     };
@@ -40,9 +42,19 @@ public class MapFragment extends Fragment {
     public void onResume() {
         super.onResume();
 
+        mMap.getController().setZoom(mLastZoom);
+
         if (mLastCenter != null) {
-            mMap.zoomToBoundingBox(mLastCenter);
+            mMap.getController().setCenter(mLastCenter);
         }
+        mMap.setMapListener(mMapListener);
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+
+        mMap.setMapListener(null);
     }
 
     @Override
@@ -53,7 +65,6 @@ public class MapFragment extends Fragment {
 
         mMap = (MapView) content.findViewById(R.id.mapview);
         mMap.setMultiTouchControls(true);
-        mMap.setMapListener(mMapListener);
 
         final ITileSource tileSource = new OverviewerTileSource("Map Day", null, 0, 10, 384, "png",
             "http://s3-us-west-2.amazonaws.com/vokal-minecraft/VOKAL/world-lighting");
