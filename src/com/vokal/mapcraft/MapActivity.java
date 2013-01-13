@@ -3,17 +3,13 @@ package com.vokal.mapcraft;
 import android.os.Bundle;
 import android.view.Window;
 
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
+
 import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.app.ActionBar;
 
-import org.osmdroid.tileprovider.MapTileProviderBasic;
-import org.osmdroid.tileprovider.tilesource.ITileSource;
-import org.osmdroid.views.MapView;
-
-import com.vokal.mapcraft.tileprovider.OverviewerTileSource;
-
 public class MapActivity extends SherlockFragmentActivity {
-    MapView mMap;
     /** Called when the activity is first created. */
     @Override
     public void onCreate(Bundle savedInstanceState)
@@ -21,11 +17,12 @@ public class MapActivity extends SherlockFragmentActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
 
-        mMap = (MapView) findViewById(R.id.mapview);
-        mMap.setMultiTouchControls(true);
 
-        final ITileSource tileSource = new OverviewerTileSource("Map Day", null, 0, 10, 384, "png",
-            "http://s3-us-west-2.amazonaws.com/vokal-minecraft/VOKAL/world-lighting");
-        mMap.setTileSource(tileSource);
+        FragmentManager manager = getSupportFragmentManager();
+        if (manager.findFragmentById(R.id.map_fragment) == null) {
+            FragmentTransaction trans = manager.beginTransaction();
+            trans.replace(R.id.map_fragment, new MapFragment());
+            trans.commit();
+        }
     }
 }
