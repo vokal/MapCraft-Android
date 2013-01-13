@@ -22,13 +22,15 @@ import com.vokal.mapcraft.tileprovider.OverviewerTileSource;
 
 public class MapFragment extends Fragment {
     static final String TAG = MapFragment.class.getSimpleName();
-    MapView mMap;
-    int mLastZoom         = 0;
-    IGeoPoint mLastCenter = null;
+    
+    static IGeoPoint mLastCenter = null;
+    static int mLastZoom         = 0;
 
+    MapView mMap;
+    
     MapListener mMapListener = new MapListener() {
         public boolean onScroll(ScrollEvent aScroll) {
-            mLastCenter = mMap.getProjection().fromPixels(mMap.getWidth() / 2, mMap.getHeight() / 2);        
+            mLastCenter = mMap.getMapCenter();
             return true;
         }
 
@@ -55,6 +57,8 @@ public class MapFragment extends Fragment {
         super.onPause();
 
         mMap.setMapListener(null);
+        
+        mLastCenter = mMap.getMapCenter();
     }
 
     @Override
