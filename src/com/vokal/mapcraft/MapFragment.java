@@ -9,6 +9,10 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 
 import com.actionbarsherlock.app.ActionBar;
+import com.actionbarsherlock.app.SherlockFragment;
+import com.actionbarsherlock.view.Menu;
+import com.actionbarsherlock.view.MenuInflater;
+import com.actionbarsherlock.view.MenuItem;
 
 import microsoft.mappoint.TileSystem;
 import org.osmdroid.api.IGeoPoint;
@@ -20,7 +24,7 @@ import org.osmdroid.views.MapView;
 
 import com.vokal.mapcraft.tileprovider.OverviewerTileSource;
 
-public class MapFragment extends Fragment {
+public class MapFragment extends SherlockFragment {
     static final String TAG = MapFragment.class.getSimpleName();
     MapView mMap;
     int mLastZoom         = 0;
@@ -37,6 +41,13 @@ public class MapFragment extends Fragment {
             return true;
         }
     };
+
+    @Override
+    public void onCreate(Bundle aSavedState) {
+        super.onCreate(aSavedState);
+
+        setHasOptionsMenu(true);
+    }
 
     @Override
     public void onResume() {
@@ -71,6 +82,29 @@ public class MapFragment extends Fragment {
         mMap.setTileSource(tileSource);
 
         return content;
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu aMenu, MenuInflater aInflater) {
+        super.onCreateOptionsMenu(aMenu, aInflater);
+        aInflater.inflate(R.menu.map_main, aMenu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem aItem) {
+        switch(aItem.getItemId()) {
+            case R.id.reload_cache:
+                reloadCache();
+                return true;
+            default:
+                return super.onOptionsItemSelected(aItem);
+        }
+    }
+
+    private void reloadCache() {
+        if  (mMap != null) {
+            mMap.getTileProvider().clearTileCache();
+        }
     }
 
     @Override
