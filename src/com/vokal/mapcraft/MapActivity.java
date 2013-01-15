@@ -96,6 +96,7 @@ public class MapActivity extends SherlockFragmentActivity {
 
         public void onLoadFinished(Loader<SpinnerAdapter> aLoader, SpinnerAdapter aData) {
             if (aData != null) {
+                getSupportActionBar().setListNavigationCallbacks(aData, null);
             }
         }
 

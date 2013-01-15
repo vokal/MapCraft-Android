@@ -61,6 +61,10 @@ public abstract class TileSet {
         mServerUrl = aServerUrl;
     }
 
+    public String getWorldName() {
+        return mWorldName;
+    }
+
     public String getName() {
         return mName;
     }
