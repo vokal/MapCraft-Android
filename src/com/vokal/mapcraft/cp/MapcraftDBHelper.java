@@ -44,7 +44,7 @@ public class MapcraftDBHelper extends SQLiteOpenHelper {
                 TileSet.MIN_ZOOM     + " INTEGER," + 
                 TileSet.MAX_ZOOM     + " INTEGER," + 
                 TileSet.DEFAULT_ZOOM + " INTEGER," + 
-                "UNIQUE(" + TileSet.SERVER_URL + ", " + TileSet.WORLD_NAME + ")" +
+                " UNIQUE(" + TileSet.SERVER_URL + ", " + TileSet.WORLD_NAME + ", " + TileSet.NAME + ")" +
             ");"
         );
             

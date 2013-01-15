@@ -15,13 +15,22 @@ public class Server {
 
     public static final String REGEX_FIND = "^var\\ *.*\\ *=\\ *\\{";
 
-    public String mName;
-    public String mUrl;
+    private String mName;
+    private String mUrl;
 
     public Server(final String aName, final String aUrl) {
         mName = aName;
         mUrl = aUrl;
     }
+
+    public String getUrl() {
+        return mUrl;
+    }
+    
+    public void setUrl(final String aUrl) {
+        mUrl = aUrl;
+    }
+    
 
     public void setup(final Context aContext) throws Exception {
         NetworkClient client = NetworkClient.getInstance(); 

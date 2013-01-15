@@ -31,7 +31,7 @@ public abstract class TileSet {
     public static final Uri CONTENT_URI = Uri.parse("content://" +
         MapcraftContentProvider.AUTHORITY + "/" + MapcraftDBHelper.TABLE_TILESET);
 
-    private int mId;
+    private int mId = -1;
     private String mServerUrl;
     private String mWorldName;
     private String mName;
@@ -101,7 +101,7 @@ public abstract class TileSet {
         }
     }
 
-    public static void saveBulk(final Context aContext, final ContentValues[] aValues) {
+    public static void saveBulk(final Context aContext, ContentValues[] aValues) {
         aContext.getContentResolver().bulkInsert(CONTENT_URI, aValues);
     }
 

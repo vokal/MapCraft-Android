@@ -3,9 +3,13 @@ package com.vokal.mapcraft;
 import android.content.*;
 import android.os.*;
 import android.view.Window;
+import android.widget.SpinnerAdapter;
 
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.CursorLoader;
+import android.support.v4.content.Loader;
 
 import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.app.ActionBar;
@@ -14,6 +18,7 @@ import com.vokal.mapcraft.models.*;
 import com.vokal.mapcraft.service.*;
 
 public class MapActivity extends SherlockFragmentActivity {
+    public static final int LOADER_NAV_LIST = 0;
     /** Called when the activity is first created. */
 
     private boolean mBound = false;
@@ -37,6 +42,8 @@ public class MapActivity extends SherlockFragmentActivity {
         }
     };
 
+    private NavLoaderManager mNavManager;
+
     Server mServer = new Server("TESET", "http://s3-us-west-2.amazonaws.com/vokal-minecraft/VOKAL");
 
     @Override
@@ -46,6 +53,9 @@ public class MapActivity extends SherlockFragmentActivity {
         setContentView(R.layout.main);
 
         getSupportActionBar().setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
+
+        mNavManager = new NavLoaderManager();
+        getSupportLoaderManager().initLoader(LOADER_NAV_LIST, null, mNavManager);
 
     }
 
@@ -76,6 +86,20 @@ public class MapActivity extends SherlockFragmentActivity {
             mService.unregister();
             unbindService(mService);
             mBound = false;
+        }
+    }
+
+    private class NavLoaderManager implements LoaderManager.LoaderCallbacks<SpinnerAdapter> {
+        public Loader<SpinnerAdapter> onCreateLoader(int aId, Bundle aArgs) {
+            return new WorldTilesetNavLoader(MapActivity.this, mServer, null);
+        }
+
+        public void onLoadFinished(Loader<SpinnerAdapter> aLoader, SpinnerAdapter aData) {
+            if (aData != null) {
+            }
+        }
+
+        public void onLoaderReset(Loader<SpinnerAdapter> aLoader) {
         }
     }
 }
