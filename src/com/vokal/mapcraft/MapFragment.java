@@ -22,7 +22,7 @@ import org.osmdroid.tileprovider.tilesource.ITileSource;
 import org.osmdroid.util.BoundingBoxE6;
 import org.osmdroid.views.MapView;
 
-import com.vokal.mapcraft.tileprovider.OverviewerTileSource;
+import com.vokal.mapcraft.tileprovider.TileSetTileSource;
 
 public class MapFragment extends SherlockFragment {
     static final String TAG = MapFragment.class.getSimpleName();
@@ -81,9 +81,9 @@ public class MapFragment extends SherlockFragment {
         mMap = (MapView) content.findViewById(R.id.mapview);
         mMap.setMultiTouchControls(true);
 
-        final ITileSource tileSource = new OverviewerTileSource("Map Day", null, 0, 10, 384, "png",
-            "http://s3-us-west-2.amazonaws.com/vokal-minecraft/VOKAL/world-lighting");
-        mMap.setTileSource(tileSource);
+        //final ITileSource tileSource = new OverviewerTileSource("Map Day", null, 0, 10, 384, "png",
+            //"http://s3-us-west-2.amazonaws.com/vokal-minecraft/VOKAL/world-lighting");
+        //mMap.setTileSource(tileSource);
 
         return content;
     }

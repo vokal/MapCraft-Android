@@ -36,5 +36,9 @@
                 <action android:name="org.andnav.osm.services.IOpenStreetMapTileProviderService" />
               </intent-filter>
         </service>	
+        <service android:name=".service.MapSyncService" />
+        <provider
+            android:name="com.vokal.mapcraft.cp.MapcraftContentProvider"
+            android:authorities="com.vokal.mapcraft.cp" />
     </application>
 </manifest>
