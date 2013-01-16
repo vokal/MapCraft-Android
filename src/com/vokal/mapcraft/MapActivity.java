@@ -83,16 +83,6 @@ public class MapActivity extends SherlockFragmentActivity implements ActionBar.O
     }
 
     @Override
-    public void onResume() {
-        super.onResume();
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-    }
-
-    @Override
     public void onStop() {
         super.onStop();
         doUnbind();
@@ -132,7 +122,7 @@ public class MapActivity extends SherlockFragmentActivity implements ActionBar.O
     public boolean onNavigationItemSelected(int aPos, long aId) {
         if (mAdapter != null) {
             TileSet t = ((TileSetNavAdapter) mAdapter).getItem(aPos);
-            if (mSelected == null || !t.getWorldName().equals(mSelected.getWorldName()) || !t.getName().equals(mSelected.getName())) {
+            if (!t.equals(mSelected)) {
                 mSelectedIndex = aPos;
                 mSelected = t;
                 getSupportLoaderManager().restartLoader(LOADER_NAV_LIST, null, mNavManager);

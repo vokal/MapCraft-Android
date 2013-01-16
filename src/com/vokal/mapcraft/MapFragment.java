@@ -95,7 +95,7 @@ public class MapFragment extends SherlockFragment {
     }
 
     public void setTileSet(final TileSet aTileSet) {
-        if (mLastTileSet == null || !aTileSet.equals(mLastTileSet)) {
+        if (aTileSet != null && (mLastTileSet == null || !aTileSet.equals(mLastTileSet))) {
             final ITileSource tileSource = new TileSetTileSource(aTileSet, 384);
             mMap.setTileSource(tileSource);
         }
