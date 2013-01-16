@@ -166,6 +166,21 @@ public abstract class TileSet {
     }
 
     @Override
+    public boolean equals(Object aT) {
+        if (aT == null || !(aT instanceof TileSet) ) {
+            return false;
+        }
+
+        if (aT == this) {
+            return true;
+        }
+
+        TileSet t = (TileSet) aT;
+
+        return mServerUrl.equals(t.getServerUrl()) && mWorldName.equals(t.getWorldName()) && mName.equals(t.getName());
+    }
+
+    @Override
     public String toString() {
         StringBuilder builder = new StringBuilder(TileSet.class.getSimpleName()).append("\n");
         builder.append("    ").append("World Name: ").append(mWorldName).append("\n");

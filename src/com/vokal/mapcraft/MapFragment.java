@@ -36,6 +36,7 @@ public class MapFragment extends SherlockFragment {
 
     RelativeLayout mParent;
     MapView mMap;
+    TileSet mLastTileSet;
     
     MapListener mMapListener = new MapListener() {
         public boolean onScroll(ScrollEvent aScroll) {
@@ -92,20 +93,39 @@ public class MapFragment extends SherlockFragment {
     }
 
     public void setTileSet(final TileSet aTileSet) {
-        if (mMap != null) {
-            mParent.removeViewAt(0);
+        if (mLastTileSet == null || !aTileSet.equals(mLastTileSet)) {
+            if (mMap != null && mParent.getChildCount() > 0) {
+                mParent.removeViewAt(0);
+            }
+
+            final ITileSource tileSource = new TileSetTileSource(aTileSet, 384);
+            final MapTileProviderMultiSource tileProvider = new MapTileProviderMultiSource(getActivity().getApplicationContext(), tileSource);
+            mMap = new MapView(getActivity(), 384, new DefaultResourceProxyImpl(getActivity().getApplicationContext()),
+                tileProvider);
+
+            mParent.addView(mMap, new RelativeLayout.LayoutParams(LayoutParams.FILL_PARENT,
+                LayoutParams.FILL_PARENT));
+
+            if (mLastTileSet != null && mLastTileSet.getWorldName().equals(aTileSet.getWorldName())) {
+                mParent.post(new Runnable() {
+                    public void run() {
+                        mMap.getController().setZoom(mLastZoom);
+
+                        if (mLastCenter != null) {
+                            mMap.getController().setCenter(mLastCenter);
+                        }
+
+                        mMap.setMapListener(mMapListener);
+                    }
+                });
+            } else {
+                mMap.setMapListener(mMapListener);
+            }
+
+            mMap.setMultiTouchControls(true);
+
         }
-
-        final ITileSource tileSource = new TileSetTileSource(aTileSet, 384);
-        final MapTileProviderMultiSource tileProvider = new MapTileProviderMultiSource(getActivity().getApplicationContext(), tileSource);
-        mMap = new MapView(getActivity(), 384, new DefaultResourceProxyImpl(getActivity().getApplicationContext()),
-            tileProvider);
-
-        mParent.addView(mMap, new RelativeLayout.LayoutParams(LayoutParams.FILL_PARENT,
-            LayoutParams.FILL_PARENT));
-
-        mMap.setMapListener(mMapListener);
-        mMap.setMultiTouchControls(true);
+        mLastTileSet = aTileSet;
     }
 
     @Override
