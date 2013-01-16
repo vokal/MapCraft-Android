@@ -3,6 +3,8 @@ package com.vokal.mapcraft;
 import android.graphics.*;
 import android.os.Bundle;
 import android.view.*;
+import android.widget.*;
+import android.view.ViewGroup.LayoutParams;
 import android.util.Log;
 
 import android.support.v4.app.Fragment;
@@ -17,12 +19,14 @@ import com.actionbarsherlock.view.MenuItem;
 import microsoft.mappoint.TileSystem;
 import org.osmdroid.api.IGeoPoint;
 import org.osmdroid.events.*;
+import org.osmdroid.DefaultResourceProxyImpl;
 import org.osmdroid.tileprovider.MapTileProviderBasic;
 import org.osmdroid.tileprovider.tilesource.ITileSource;
 import org.osmdroid.util.BoundingBoxE6;
 import org.osmdroid.views.MapView;
 
-import com.vokal.mapcraft.tileprovider.TileSetTileSource;
+import com.vokal.mapcraft.models.TileSet;
+import com.vokal.mapcraft.tileprovider.*;
 
 public class MapFragment extends SherlockFragment {
     static final String TAG = MapFragment.class.getSimpleName();
@@ -30,6 +34,7 @@ public class MapFragment extends SherlockFragment {
     static IGeoPoint mLastCenter = null;
     static int mLastZoom         = 0;
 
+    RelativeLayout mParent;
     MapView mMap;
     
     MapListener mMapListener = new MapListener() {
@@ -39,6 +44,7 @@ public class MapFragment extends SherlockFragment {
         }
 
         public boolean onZoom(ZoomEvent aZoom) {
+            android.util.Log.d(TAG, "CURRENT_ZOOM: " +  aZoom.getZoomLevel());
             mLastZoom = aZoom.getZoomLevel();
             return true;
         }
@@ -55,12 +61,14 @@ public class MapFragment extends SherlockFragment {
     public void onResume() {
         super.onResume();
 
-        mMap.getController().setZoom(mLastZoom);
+        if (mMap != null) {
+            mMap.getController().setZoom(mLastZoom);
 
-        if (mLastCenter != null) {
-            mMap.getController().setCenter(mLastCenter);
+            if (mLastCenter != null) {
+                mMap.getController().setCenter(mLastCenter);
+            }
+            mMap.setMapListener(mMapListener);
         }
-        mMap.setMapListener(mMapListener);
     }
 
     @Override
@@ -78,14 +86,26 @@ public class MapFragment extends SherlockFragment {
 
         View content = aInflater.inflate(R.layout.map_fragment, null);
 
-        mMap = (MapView) content.findViewById(R.id.mapview);
-        mMap.setMultiTouchControls(true);
-
-        //final ITileSource tileSource = new OverviewerTileSource("Map Day", null, 0, 10, 384, "png",
-            //"http://s3-us-west-2.amazonaws.com/vokal-minecraft/VOKAL/world-lighting");
-        //mMap.setTileSource(tileSource);
+        mParent = (RelativeLayout) content;
 
         return content;
+    }
+
+    public void setTileSet(final TileSet aTileSet) {
+        if (mMap != null) {
+            mParent.removeViewAt(0);
+        }
+
+        final ITileSource tileSource = new TileSetTileSource(aTileSet, 384);
+        final MapTileProviderMultiSource tileProvider = new MapTileProviderMultiSource(getActivity().getApplicationContext(), tileSource);
+        mMap = new MapView(getActivity(), 384, new DefaultResourceProxyImpl(getActivity().getApplicationContext()),
+            tileProvider);
+
+        mParent.addView(mMap, new RelativeLayout.LayoutParams(LayoutParams.FILL_PARENT,
+            LayoutParams.FILL_PARENT));
+
+        mMap.setMapListener(mMapListener);
+        mMap.setMultiTouchControls(true);
     }
 
     @Override

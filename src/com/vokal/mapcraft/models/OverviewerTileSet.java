@@ -15,6 +15,7 @@ public class OverviewerTileSet extends TileSet {
     }
 
     public String getPathForTile(final MapTile aTile) {
+        android.util.Log.d("HEHRHHRH", aTile.toString());
         StringBuilder builder = new StringBuilder();
         if (aTile.getX() >= Math.pow(2.0, aTile.getZoomLevel()) || 
             aTile.getY() >= Math.pow(2.0, aTile.getZoomLevel())) {

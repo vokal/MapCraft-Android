@@ -17,6 +17,8 @@ public class TileSetTileSource extends OnlineTileSourceBase {
 
     @Override
     public String getTileURLString(final MapTile aTile) {
-        return mTileSet.getBaseUrl() + mTileSet.getPathForTile(aTile) + mTileSet.getImageExt();
+        String url = mTileSet.getBaseUrl() + mTileSet.getPathForTile(aTile) + mTileSet.getImageExt();
+        android.util.Log.d("URL ", url);
+        return url;
     }
 }

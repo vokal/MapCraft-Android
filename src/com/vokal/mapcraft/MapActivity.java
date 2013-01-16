@@ -5,6 +5,7 @@ import android.os.*;
 import android.view.Window;
 import android.widget.SpinnerAdapter;
 
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.app.LoaderManager;
@@ -16,8 +17,9 @@ import com.actionbarsherlock.app.ActionBar;
 
 import com.vokal.mapcraft.models.*;
 import com.vokal.mapcraft.service.*;
+import com.vokal.mapcraft.widget.TileSetNavAdapter;
 
-public class MapActivity extends SherlockFragmentActivity {
+public class MapActivity extends SherlockFragmentActivity implements ActionBar.OnNavigationListener {
     public static final int LOADER_NAV_LIST = 0;
     /** Called when the activity is first created. */
 
@@ -45,6 +47,10 @@ public class MapActivity extends SherlockFragmentActivity {
     private NavLoaderManager mNavManager;
 
     Server mServer = new Server("TESET", "http://s3-us-west-2.amazonaws.com/vokal-minecraft/VOKAL");
+    private SpinnerAdapter mAdapter;
+    private int mSelectedIndex;
+    private TileSet mSelected;
+    private MapFragment mMap;
 
     @Override
     public void onCreate(Bundle savedInstanceState)
@@ -53,6 +59,17 @@ public class MapActivity extends SherlockFragmentActivity {
         setContentView(R.layout.main);
 
         getSupportActionBar().setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
+
+        FragmentManager manager = getSupportFragmentManager();
+        Fragment frag = manager.findFragmentById(R.id.map_fragment);
+        if (frag == null) {
+            FragmentTransaction trans = manager.beginTransaction();
+            mMap = new MapFragment();
+            trans.replace(R.id.map_fragment, mMap);
+            trans.commit();
+        } else {
+            mMap = (MapFragment) frag;
+        }
 
         mNavManager = new NavLoaderManager();
         getSupportLoaderManager().initLoader(LOADER_NAV_LIST, null, mNavManager);
@@ -91,16 +108,34 @@ public class MapActivity extends SherlockFragmentActivity {
 
     private class NavLoaderManager implements LoaderManager.LoaderCallbacks<SpinnerAdapter> {
         public Loader<SpinnerAdapter> onCreateLoader(int aId, Bundle aArgs) {
-            return new WorldTilesetNavLoader(MapActivity.this, mServer, null);
+            return new WorldTilesetNavLoader(MapActivity.this, mServer, mSelected);
         }
 
         public void onLoadFinished(Loader<SpinnerAdapter> aLoader, SpinnerAdapter aData) {
             if (aData != null) {
-                getSupportActionBar().setListNavigationCallbacks(aData, null);
+                mAdapter = aData;
+                getSupportActionBar().setListNavigationCallbacks(aData, MapActivity.this);
+                getSupportActionBar().setSelectedNavigationItem(mSelectedIndex);
             }
         }
 
         public void onLoaderReset(Loader<SpinnerAdapter> aLoader) {
+            mAdapter = null;
         }
+    }
+
+    public boolean onNavigationItemSelected(int aPos, long aId) {
+        if (mAdapter != null) {
+            TileSet t = ((TileSetNavAdapter) mAdapter).getItem(aPos);
+            if (mSelected == null || !t.getWorldName().equals(mSelected.getWorldName()) || !t.getName().equals(mSelected.getName())) {
+                mSelectedIndex = aPos;
+                mSelected = t;
+                getSupportLoaderManager().restartLoader(LOADER_NAV_LIST, null, mNavManager);
+                mMap.setTileSet(mSelected);
+            }
+            return true;
+        }
+
+        return false;
     }
 }

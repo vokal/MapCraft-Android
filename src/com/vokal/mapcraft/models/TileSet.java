@@ -51,6 +51,8 @@ public abstract class TileSet {
         mName      = aObj.getString("name");
         mPath      = aObj.getString("path");
         mExt       = aObj.getString("imgextension");
+        mMinZoom   = aObj.getInt("minZoom");
+        mMaxZoom   = aObj.getInt("maxZoom");
     }
 
     public String getServerUrl() {
@@ -121,6 +123,8 @@ public abstract class TileSet {
         values.put(BASE, mBase);
         values.put(PATH, mPath);
         values.put(EXT, mExt);
+        values.put(MIN_ZOOM, mMinZoom);
+        values.put(MAX_ZOOM, mMaxZoom);
 
         return values;
     }
@@ -154,6 +158,10 @@ public abstract class TileSet {
             mPath = aCursor.getString(index);
         } else if (aName.equals(EXT)) {
             mExt = aCursor.getString(index);
+        } else if (aName.equals(MIN_ZOOM)) {
+            mMinZoom = aCursor.getInt(index);
+        } else if (aName.equals(MAX_ZOOM)) {
+            mMaxZoom = aCursor.getInt(index);
         }
     }
 
