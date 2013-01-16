@@ -87,43 +87,17 @@ public class MapFragment extends SherlockFragment {
 
         View content = aInflater.inflate(R.layout.map_fragment, null);
 
-        mParent = (RelativeLayout) content;
+        mMap = (MapView) content.findViewById(R.id.mapview);
+        mMap.setMultiTouchControls(true);
+        mMap.setMapListener(mMapListener);
 
         return content;
     }
 
     public void setTileSet(final TileSet aTileSet) {
         if (mLastTileSet == null || !aTileSet.equals(mLastTileSet)) {
-            if (mMap != null && mParent.getChildCount() > 0) {
-                mParent.removeViewAt(0);
-            }
-
             final ITileSource tileSource = new TileSetTileSource(aTileSet, 384);
-            final MapTileProviderMultiSource tileProvider = new MapTileProviderMultiSource(getActivity().getApplicationContext(), tileSource);
-            mMap = new MapView(getActivity(), 384, new DefaultResourceProxyImpl(getActivity().getApplicationContext()),
-                tileProvider);
-
-            mParent.addView(mMap, new RelativeLayout.LayoutParams(LayoutParams.FILL_PARENT,
-                LayoutParams.FILL_PARENT));
-
-            if (mLastTileSet != null && mLastTileSet.getWorldName().equals(aTileSet.getWorldName())) {
-                mParent.post(new Runnable() {
-                    public void run() {
-                        mMap.getController().setZoom(mLastZoom);
-
-                        if (mLastCenter != null) {
-                            mMap.getController().setCenter(mLastCenter);
-                        }
-
-                        mMap.setMapListener(mMapListener);
-                    }
-                });
-            } else {
-                mMap.setMapListener(mMapListener);
-            }
-
-            mMap.setMultiTouchControls(true);
-
+            mMap.setTileSource(tileSource);
         }
         mLastTileSet = aTileSet;
     }

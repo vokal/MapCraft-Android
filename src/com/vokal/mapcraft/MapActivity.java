@@ -88,6 +88,11 @@ public class MapActivity extends SherlockFragmentActivity implements ActionBar.O
     }
 
     @Override
+    public void onPause() {
+        super.onPause();
+    }
+
+    @Override
     public void onStop() {
         super.onStop();
         doUnbind();
