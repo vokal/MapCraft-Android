@@ -48,8 +48,6 @@ public class MapActivity extends SherlockFragmentActivity implements ActionBar.O
 
     Server mServer = new Server("TESET", "http://s3-us-west-2.amazonaws.com/vokal-minecraft/VOKAL");
     private SpinnerAdapter mAdapter;
-    private int mSelectedIndex;
-    private TileSet mSelected;
     private MapFragment mMap;
 
     @Override
@@ -103,14 +101,14 @@ public class MapActivity extends SherlockFragmentActivity implements ActionBar.O
 
     private class NavLoaderManager implements LoaderManager.LoaderCallbacks<SpinnerAdapter> {
         public Loader<SpinnerAdapter> onCreateLoader(int aId, Bundle aArgs) {
-            return new WorldTilesetNavLoader(MapActivity.this, mServer, mSelected);
+            return new WorldTilesetNavLoader(MapActivity.this, mServer, mMap.getTileSet());
         }
 
         public void onLoadFinished(Loader<SpinnerAdapter> aLoader, SpinnerAdapter aData) {
             if (aData != null) {
                 mAdapter = aData;
                 getSupportActionBar().setListNavigationCallbacks(aData, MapActivity.this);
-                getSupportActionBar().setSelectedNavigationItem(mSelectedIndex);
+                getSupportActionBar().setSelectedNavigationItem(mMap.getSelectedIndex());
             }
         }
 
@@ -122,11 +120,10 @@ public class MapActivity extends SherlockFragmentActivity implements ActionBar.O
     public boolean onNavigationItemSelected(int aPos, long aId) {
         if (mAdapter != null) {
             TileSet t = ((TileSetNavAdapter) mAdapter).getItem(aPos);
-            if (!t.equals(mSelected)) {
-                mSelectedIndex = aPos;
-                mSelected = t;
+            if (!t.equals(mMap.getTileSet())) {
+                mMap.setTileSet(t);
+                mMap.setSelectedIndex(aPos);
                 getSupportLoaderManager().restartLoader(LOADER_NAV_LIST, null, mNavManager);
-                mMap.setTileSet(mSelected);
             }
             return true;
         }

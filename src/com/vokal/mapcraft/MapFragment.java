@@ -37,6 +37,7 @@ public class MapFragment extends SherlockFragment {
     RelativeLayout mParent;
     MapView mMap;
     TileSet mLastTileSet;
+    int mSelectedIndex = 0;
     
     MapListener mMapListener = new MapListener() {
         public boolean onScroll(ScrollEvent aScroll) {
@@ -63,6 +64,10 @@ public class MapFragment extends SherlockFragment {
         super.onResume();
 
         if (mMap != null) {
+            if (mLastTileSet != null) {
+                final ITileSource tileSource = new TileSetTileSource(mLastTileSet, 384);
+                mMap.setTileSource(tileSource);
+            }
             mMap.getController().setZoom(mLastZoom);
 
             if (mLastCenter != null) {
@@ -100,6 +105,18 @@ public class MapFragment extends SherlockFragment {
             mMap.setTileSource(tileSource);
         }
         mLastTileSet = aTileSet;
+    }
+
+    public TileSet getTileSet() {
+        return mLastTileSet;
+    }
+
+    public int getSelectedIndex() {
+        return mSelectedIndex;
+    }
+    
+    public void setSelectedIndex(final int aSelectedIndex) {
+        mSelectedIndex = aSelectedIndex;
     }
 
     @Override
