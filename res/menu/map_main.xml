@@ -1,9 +1,3 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
-    <item
-        android:id="@+id/reload_cache"
-        android:title="@string/reload_cache"
-        android:icon="@drawable/ic_action_refresh"
-        android:showAsAction="always"
-        />
 </menu>

@@ -68,12 +68,13 @@ public class MapFragment extends SherlockFragment {
                 final ITileSource tileSource = new TileSetTileSource(mLastTileSet, 384);
                 mMap.setTileSource(tileSource);
             }
+
             mMap.getController().setZoom(mLastZoom);
+            mMap.setMapListener(mMapListener);
 
             if (mLastCenter != null) {
                 mMap.getController().setCenter(mLastCenter);
             }
-            mMap.setMapListener(mMapListener);
         }
     }
 
@@ -128,9 +129,6 @@ public class MapFragment extends SherlockFragment {
     @Override
     public boolean onOptionsItemSelected(MenuItem aItem) {
         switch(aItem.getItemId()) {
-            case R.id.reload_cache:
-                reloadCache();
-                return true;
             default:
                 return super.onOptionsItemSelected(aItem);
         }
