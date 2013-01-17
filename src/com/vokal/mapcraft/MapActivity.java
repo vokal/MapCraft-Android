@@ -57,6 +57,7 @@ public class MapActivity extends SherlockFragmentActivity implements ActionBar.O
         setContentView(R.layout.main);
 
         getSupportActionBar().setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
+        getSupportActionBar().setDisplayShowTitleEnabled(false);
 
         FragmentManager manager = getSupportFragmentManager();
         Fragment frag = manager.findFragmentById(R.id.map_fragment);
