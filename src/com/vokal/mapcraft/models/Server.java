@@ -5,7 +5,8 @@ import android.content.ContentValues;
 
 import org.json.*;
 
-import com.vokal.network.*;
+import com.vokal.network.NetworkClient;
+import com.vokal.network.NetworkResponse;
 
 public class Server {
 
@@ -34,15 +35,11 @@ public class Server {
 
     public void setup(final Context aContext) throws Exception {
         NetworkClient client = NetworkClient.getInstance(); 
-        client.setImpl(new HttpURLConnectionImpl(""));
         NetworkResponse resp = client.get(mUrl + "/overviewerConfig.js");
 
         if (resp.getCode() / 100 == 2) {
             String config = resp.getResponse();
-            config = config.replaceAll(REGEX_FIND, "{").replace("};", "}");
-            JSONObject j = new JSONObject(config);
-
-            System.out.println(j);
+            JSONObject j = Server.jsToJSON(config);
 
             JSONArray tilesets = j.getJSONArray("tilesets");
             ContentValues[] values = new ContentValues[tilesets.length()];
@@ -50,11 +47,14 @@ public class Server {
                 TileSet set = new OverviewerTileSet(tilesets.getJSONObject(i));
                 set.setServerUrl(mUrl);
                 values[i] = set.getContentValues();
-
-                System.out.println(set.toString());
             }
 
             TileSet.saveBulk(aContext, values);
         }
+    }
+
+    public static JSONObject jsToJSON(final String aJSFile) throws JSONException {
+        String out = aJSFile.replaceAll(REGEX_FIND, "{").replace("};", "}");
+        return new JSONObject(out);
     }
 }
