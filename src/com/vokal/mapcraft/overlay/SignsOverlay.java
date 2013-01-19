@@ -6,7 +6,6 @@ import android.graphics.Point;
 import java.util.ArrayList;
 
 import org.osmdroid.api.IMapView;
-import org.osmdroid.util.GeoPoint;
 import org.osmdroid.views.MapView;
 import org.osmdroid.views.overlay.ItemizedOverlay;
 
@@ -14,16 +13,11 @@ import com.vokal.mapcraft.R;
 
 public class SignsOverlay extends ItemizedOverlay<SignPin> {
 
-    ArrayList<SignPin> signs;
+    ArrayList<SignPin> signs = new ArrayList<SignPin>();
 
     public SignsOverlay(Context aContext, MapView aMapView) {
         super(aContext.getResources().getDrawable(R.drawable.signpost), aMapView.getResourceProxy());
 
-        signs = new ArrayList<SignPin>();
-
-        signs.add(new SignPin("", "", new GeoPoint(0,0)));
-        signs.add(new SignPin("", "", new GeoPoint(-80,-180)));
-        signs.add(new SignPin("", "", new GeoPoint(80,180)));
         populate();
     }
 

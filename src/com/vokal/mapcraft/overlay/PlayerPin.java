@@ -1,7 +1,5 @@
 package com.vokal.mapcraft.overlay;
 
-import android.util.Log;
-
 import org.osmdroid.views.overlay.OverlayItem;
 
 import com.vokal.mapcraft.overlay.PlayersOverlay.PlayerPosition;
@@ -18,8 +16,6 @@ public class PlayerPin extends OverlayItem {
         super(getUser(aPlayer.icon), aPlayer.name, "", aPlayer.getGeoPoint());
         userName = getUser(aPlayer.icon);
         playerPos = aPlayer;
-        setMarkerHotspot(HotspotPlace.BOTTOM_CENTER);
-        Log.d(TAG, this.toString());
         loadAvatar();
     }
 
