@@ -1,52 +1,55 @@
 package com.vokal.mapcraft;
 
-import android.graphics.*;
 import android.os.Bundle;
-import android.view.*;
-import android.widget.*;
-import android.view.ViewGroup.LayoutParams;
 import android.util.Log;
+import android.view.*;
+import android.widget.RelativeLayout;
 
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
+import java.util.ArrayList;
+import java.util.List;
 
-import com.actionbarsherlock.app.ActionBar;
+import org.osmdroid.api.IGeoPoint;
+import org.osmdroid.events.*;
+import org.osmdroid.tileprovider.tilesource.ITileSource;
+import org.osmdroid.views.MapController;
+import org.osmdroid.views.MapView;
+import org.osmdroid.views.overlay.Overlay;
+
 import com.actionbarsherlock.app.SherlockFragment;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
 
-import microsoft.mappoint.TileSystem;
-import org.osmdroid.api.IGeoPoint;
-import org.osmdroid.events.*;
-import org.osmdroid.DefaultResourceProxyImpl;
-import org.osmdroid.tileprovider.MapTileProviderBasic;
-import org.osmdroid.tileprovider.tilesource.ITileSource;
-import org.osmdroid.util.BoundingBoxE6;
-import org.osmdroid.views.MapView;
-
 import com.vokal.mapcraft.models.TileSet;
-import com.vokal.mapcraft.tileprovider.*;
+import com.vokal.mapcraft.overlay.PlayersOverlay;
+import com.vokal.mapcraft.overlay.SignsOverlay;
+import com.vokal.mapcraft.tileprovider.TileSetTileSource;
 
 public class MapFragment extends SherlockFragment {
     static final String TAG = MapFragment.class.getSimpleName();
-    
+
     static IGeoPoint mLastCenter = null;
-    static int mLastZoom         = 0;
+    static int mLastZoom = 6;
 
     RelativeLayout mParent;
     MapView mMap;
+    MapController mController;
+
     TileSet mLastTileSet;
     int mSelectedIndex = 0;
-    
+
+    List<Overlay> mOverlays;
+
     MapListener mMapListener = new MapListener() {
+        @Override
         public boolean onScroll(ScrollEvent aScroll) {
             mLastCenter = mMap.getMapCenter();
             return true;
         }
 
+        @Override
         public boolean onZoom(ZoomEvent aZoom) {
-            android.util.Log.d(TAG, "CURRENT_ZOOM: " +  aZoom.getZoomLevel());
+            Log.d(TAG, "CURRENT_ZOOM: " +  aZoom.getZoomLevel());
             mLastZoom = aZoom.getZoomLevel();
             return true;
         }
@@ -65,16 +68,17 @@ public class MapFragment extends SherlockFragment {
 
         if (mMap != null) {
             if (mLastTileSet != null) {
-                final ITileSource tileSource = new TileSetTileSource(mLastTileSet, 384);
+                final ITileSource tileSource = new TileSetTileSource(mLastTileSet);
                 mMap.setTileSource(tileSource);
             }
 
-            mMap.getController().setZoom(mLastZoom);
+            mController.setZoom(mLastZoom);
             mMap.setMapListener(mMapListener);
 
             if (mLastCenter != null) {
-                mMap.getController().setCenter(mLastCenter);
+                mController.setCenter(mLastCenter);
             }
+            mMap.setMapListener(mMapListener);
         }
     }
 
@@ -83,7 +87,7 @@ public class MapFragment extends SherlockFragment {
         super.onPause();
 
         mMap.setMapListener(null);
-        
+
         mLastCenter = mMap.getMapCenter();
     }
 
@@ -97,12 +101,13 @@ public class MapFragment extends SherlockFragment {
         mMap.setMultiTouchControls(true);
         mMap.setMapListener(mMapListener);
 
+        mController = mMap.getController();
         return content;
     }
 
     public void setTileSet(final TileSet aTileSet) {
         if (aTileSet != null && (mLastTileSet == null || !aTileSet.equals(mLastTileSet))) {
-            final ITileSource tileSource = new TileSetTileSource(aTileSet, 384);
+            final ITileSource tileSource = new TileSetTileSource(aTileSet);
             mMap.setTileSource(tileSource);
         }
         mLastTileSet = aTileSet;
@@ -115,7 +120,7 @@ public class MapFragment extends SherlockFragment {
     public int getSelectedIndex() {
         return mSelectedIndex;
     }
-    
+
     public void setSelectedIndex(final int aSelectedIndex) {
         mSelectedIndex = aSelectedIndex;
     }
@@ -135,8 +140,9 @@ public class MapFragment extends SherlockFragment {
     }
 
     private void reloadCache() {
-        if  (mMap != null) {
+        if (mMap != null) {
             mMap.getTileProvider().clearTileCache();
+            mMap.invalidate();
         }
     }
 
@@ -145,5 +151,23 @@ public class MapFragment extends SherlockFragment {
         super.onActivityCreated(aSavedState);
 
         setRetainInstance(true);
+    }
+
+    private void addOverlays(TileSet aTileSet) {
+        if (mOverlays == null) {
+            mOverlays = new ArrayList<Overlay>();
+        }
+
+        if (mOverlays.size() > 0) {
+            mOverlays.clear();
+            // TODO recycle existing
+        }
+
+        // TODO: implement tile toggling/switching
+
+        mOverlays.add(new SignsOverlay(this.getActivity(), mMap));
+        mOverlays.add(new PlayersOverlay(this.getActivity(), mMap, aTileSet));
+
+        mMap.getOverlays().addAll(mOverlays);
     }
 }
