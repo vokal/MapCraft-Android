@@ -1,6 +1,7 @@
 package com.vokal.mapcraft.service;
 
-import android.content.*;
+import android.content.ComponentName;
+import android.content.ServiceConnection;
 import android.os.*;
 
 public class MapServiceConnection implements ServiceConnection {
