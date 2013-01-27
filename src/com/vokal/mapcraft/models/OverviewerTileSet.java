@@ -22,7 +22,7 @@ public class OverviewerTileSet extends TileSet {
         UPPER_LEFT, UPPER_RIGHT, LOWER_RIGHT, LOWER_LEFT
     }
 
-    private NorthDirection mNorthDirection;
+    private NorthDirection mNorthDirection = NorthDirection.UPPER_LEFT;
 
     OverviewerTileSet() { }
 
@@ -66,6 +66,10 @@ public class OverviewerTileSet extends TileSet {
         } else {
             super.setByCursorColumn(aCursor, aName, index);
         }
+    }
+
+    public NorthDirection getNorthDirection() {
+        return mNorthDirection;
     }
 
     @Override

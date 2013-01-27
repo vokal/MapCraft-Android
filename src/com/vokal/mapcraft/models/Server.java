@@ -13,6 +13,8 @@ import com.vokal.network.NetworkResponse;
 
 public class Server {  // TODO: rename to OverviewerServer and derive from new Server base class
 
+    public static final String TAG = "Server";
+
     public static final String ID = "_id";
     public static final String NAME = "name";
     public static final String URL  = "url";
@@ -84,6 +86,7 @@ public class Server {  // TODO: rename to OverviewerServer and derive from new S
                         group.displayName = j.getString("displayName");
                         group.groupName = j.getString("groupName");
                         group.icon = j.getString("icon");
+                        groups.add(group);
                     }
                     markerGroups.put(tileSet, groups);
                 }
@@ -99,7 +102,7 @@ public class Server {  // TODO: rename to OverviewerServer and derive from new S
                 for (String tileSet : markerGroups.keySet()) {
                     ArrayList<MarkerGroup> groups = markerGroups.get(tileSet);
                     for (MarkerGroup group : groups) {
-                        JSONArray markerGroup = markersJSON.getJSONArray(group.groupName);
+                        JSONArray markerGroup = markersJSON.getJSONObject(group.groupName).getJSONArray("raw");
                         for (int m = 0; m < markerGroup.length(); m++) {
                             JSONObject markerJSON = markerGroup.getJSONObject(m);
                             markers.add(new OverviewerMarker(group, markerJSON));

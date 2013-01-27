@@ -20,9 +20,10 @@ import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
 
+import com.vokal.mapcraft.models.OverviewerTileSet;
 import com.vokal.mapcraft.models.TileSet;
-import com.vokal.mapcraft.overlay.PlayersOverlay;
-import com.vokal.mapcraft.overlay.SignsOverlay;
+import com.vokal.mapcraft.overlay.OverviewerPlayers;
+import com.vokal.mapcraft.overlay.OverviewerSigns;
 import com.vokal.mapcraft.tileprovider.TileSetTileSource;
 
 public class MapFragment extends SherlockFragment {
@@ -109,6 +110,8 @@ public class MapFragment extends SherlockFragment {
         if (aTileSet != null && (mLastTileSet == null || !aTileSet.equals(mLastTileSet))) {
             final ITileSource tileSource = new TileSetTileSource(aTileSet);
             mMap.setTileSource(tileSource);
+
+            addOverlays(aTileSet);
         }
         mLastTileSet = aTileSet;
     }
@@ -160,13 +163,15 @@ public class MapFragment extends SherlockFragment {
 
         if (mOverlays.size() > 0) {
             mOverlays.clear();
+            mMap.getOverlays().clear();
             // TODO recycle existing
         }
 
         // TODO: implement tile toggling/switching
 
-        mOverlays.add(new SignsOverlay(this.getActivity(), mMap));
-        mOverlays.add(new PlayersOverlay(this.getActivity(), mMap, aTileSet));
+        // TODO: add some method to switch on server type
+        mOverlays.add(new OverviewerPlayers(this.getActivity(), mMap, (OverviewerTileSet) aTileSet));
+        mOverlays.add(new OverviewerSigns(this.getActivity(), mMap, (OverviewerTileSet) aTileSet));
 
         mMap.getOverlays().addAll(mOverlays);
     }

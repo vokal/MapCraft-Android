@@ -12,10 +12,8 @@ public class MapcraftDBHelper extends SQLiteOpenHelper {
     private static final String TAG = MapcraftDBHelper.class.getSimpleName();
 
     private static final String DATABASE_NAME = "mapcraft.db";
-    private static int DATABASE_VERSION       = 5;
+    private static int DATABASE_VERSION       = 7;
 
-    // TODO:  we're going to need separate tables for the differnt server types probably
-    // since it's impossible to have derived classes use a single base table
     public static final String TABLE_SERVER      = "server";
     public static final String TABLE_TILESET     = "tileset";
     public static final String TABLE_MARKERS     = "markers";
@@ -55,10 +53,11 @@ public class MapcraftDBHelper extends SQLiteOpenHelper {
 
         aDb.execSQL(
             "CREATE TABLE " + TABLE_MARKERS + " (" +
-                    OverviewerMarker.ID          + " INTEGER PRIMARY KEY AUTOINCREMENT," +
+                    OverviewerMarker.ID          + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
                     OverviewerMarker.WORLD       + " VARCHAR, " +
                     OverviewerMarker.GROUP       + " VARCHAR, " +
                     OverviewerMarker.ICON        + " VARCHAR, " +
+                    OverviewerMarker.TEXT        + " VARCHAR, " +
                     OverviewerMarker.X           + " INTEGER, " +
                     OverviewerMarker.Y           + " INTEGER, " +
                     OverviewerMarker.Z           + " INTEGER"  +

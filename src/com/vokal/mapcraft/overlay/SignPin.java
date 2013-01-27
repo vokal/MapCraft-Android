@@ -3,16 +3,17 @@ package com.vokal.mapcraft.overlay;
 import org.osmdroid.util.GeoPoint;
 import org.osmdroid.views.overlay.OverlayItem;
 
+import com.vokal.mapcraft.models.Marker;
+
 public class SignPin extends OverlayItem {
 
-	public SignPin(String aTitle, String aDescription, GeoPoint aGeoPoint) {
-		super(aTitle, aDescription, aGeoPoint);
-		// TODO Auto-generated constructor stub
-	}
+    public static final String  TAG     = "SignPin";
 
-	public SignPin(String aUid, String aTitle, String aDescription, GeoPoint aGeoPoint) {
-		super(aUid, aTitle, aDescription, aGeoPoint);
-		// TODO Auto-generated constructor stub
-	}
+    private Marker mMarker;
+
+    public SignPin(Marker aMarker, GeoPoint aGeoPoint, String aTitle) {
+        super(String.valueOf(aMarker.hashCode()), aTitle, aMarker.mText, aGeoPoint);
+        mMarker = aMarker;
+    }
 
 }

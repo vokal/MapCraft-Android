@@ -1,21 +1,24 @@
 package com.vokal.mapcraft.overlay;
 
+import org.osmdroid.util.GeoPoint;
 import org.osmdroid.views.overlay.OverlayItem;
 
-import com.vokal.mapcraft.overlay.PlayersOverlay.PlayerPosition;
+import com.vokal.mapcraft.models.Marker;
 
 
 public class PlayerPin extends OverlayItem {
 
-    public static final String TAG = "PlayerPin";
+    public static final String  TAG             = "PlayerPin";
 
-    private String userName;
-    private PlayerPosition playerPos;
+    private String    mPlayerName;
+    private Marker    mMarker;
 
-    public PlayerPin(PlayerPosition aPlayer) {
-        super(getUser(aPlayer.icon), aPlayer.name, "", aPlayer.getGeoPoint());
-        userName = getUser(aPlayer.icon);
-        playerPos = aPlayer;
+    public PlayerPin(Marker marker, GeoPoint aGeoPoint, String aPlayerName) {
+        super(aPlayerName, aPlayerName, marker.toString(), aGeoPoint);
+
+        mPlayerName     = aPlayerName;
+        mMarker         = marker;
+
         loadAvatar();
     }
 
@@ -37,7 +40,7 @@ public class PlayerPin extends OverlayItem {
     public String toString() {
         int x = (mGeoPoint.getLatitudeE6());
         int y = (mGeoPoint.getLongitudeE6());
-        return String.format("(%d, %d): %s", x, y, userName);
+        return String.format("(%d, %d): %s", x, y, mPlayerName);
     }
 
 }
