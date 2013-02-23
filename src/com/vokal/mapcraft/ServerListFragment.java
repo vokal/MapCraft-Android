@@ -16,7 +16,7 @@ import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 
 import com.actionbarsherlock.app.ActionBar;
-import com.actionbarsherlock.app.SherlockFragment;
+import com.actionbarsherlock.app.SherlockListFragment;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
@@ -24,21 +24,36 @@ import com.actionbarsherlock.view.MenuItem;
 import com.vokal.mapcraft.models.Server;
 import com.vokal.mapcraft.widget.*;
 
-public class ServerListFragment extends SherlockFragment 
+public class ServerListFragment extends SherlockListFragment 
     implements SwipeDismissListViewTouchListener.OnDismissCallback {
 
     public static final int LOADER_SERVERS = 0;
 
     private ServerLoaderManager mNavManager;
     
-    ListView mList;
     SwipeDismissListViewTouchListener mTouchListener;
-    ServerAdapter mAdapter;
+
+    SimpleCursorAdapter mAdapter;
+    SimpleCursorAdapter.ViewBinder mBinder = new SimpleCursorAdapter.ViewBinder() {
+        public boolean setViewValue(View aView, Cursor aCursor, int aColumn) {
+            switch(aView.getId()) {
+                case R.id.title:
+                    ((TextView) aView).setText(aCursor.getString(aColumn));
+                    return true;
+                case R.id.preview:
+                    //dScoutApplication.sAvatarLoader.loadImage(aCursor.getString(aColumn),
+                        //(ImageView) aView, R.drawable.profile_me_icon);
+                    return true;
+                default:
+                    return false;
+            }
+        }
+    };
 
     @Override
-    public View onCreateView(LayoutInflater aInflater, ViewGroup aContainer, Bundle aSavedState) {
-        super.onCreateView(aInflater, aContainer, aSavedState);
-
+    public void onCreate(Bundle aSavedState) {
+        super.onCreate(aSavedState);
+    
         try {
             Server server = new Server("VOKAL Interactive", "http://s3-us-west-2.amazonaws.com/vokal-minecraft/VOKAL");
             server.save(getActivity());
@@ -48,26 +63,35 @@ public class ServerListFragment extends SherlockFragment
         } catch (Exception e) {
             e.printStackTrace();
         }
-
-        View content = aInflater.inflate(R.layout.server_fragment, null);
-
-        mList = (ListView) content.findViewById(R.id.list);
-
-        mTouchListener = new SwipeDismissListViewTouchListener(mList, this);
-
-        mList.setOnTouchListener(mTouchListener);
-        mList.setOnScrollListener(mTouchListener.makeScrollListener());
-    
-        return content;
     }
 
     @Override
     public void onResume() {
         super.onResume();
 
+
+        mTouchListener = new SwipeDismissListViewTouchListener(getListView(), this);
+
+        getListView().setBackgroundColor(0xffffffff);
+        getListView().setOnTouchListener(mTouchListener);
+        getListView().setOnScrollListener(mTouchListener.makeScrollListener());
+
         mNavManager = new ServerLoaderManager();
         getLoaderManager().initLoader(LOADER_SERVERS, null, mNavManager);
     }
+
+    @Override
+    public void onListItemClick(ListView aList, View aView, int aPos, long aId) {
+        if (mAdapter != null) {
+            Cursor c = (Cursor) mAdapter.getItem(aPos);
+            Server s = Server.fromCursor(c);
+
+            Intent i = new Intent(getActivity(), MapActivity.class);
+            i.putExtra(Server.TAG, s);
+            startActivity(i);
+        }
+    }
+
 
     @Override
     public void onDismiss(ListView listView, int[] reverseSortedPositions) {
@@ -82,17 +106,23 @@ public class ServerListFragment extends SherlockFragment
         }
 
         public void onLoadFinished(Loader<Cursor> aLoader, Cursor aData) {
-            if (mList.getAdapter() == null) {
-                ServerAdapter adapter = new ServerAdapter(getActivity(), aData);
-                mList.setAdapter(adapter);
-                mList.setOnItemClickListener(adapter);
+            if (mAdapter == null) {
+                mAdapter = new SimpleCursorAdapter(getActivity(), 
+                    R.layout.server_item, 
+                    aData,    
+                    new String[] { Server.NAME, Server.PREVIEW },
+                    new int[] { R.id.title, R.id.preview },
+                    0);
+                mAdapter.setViewBinder(mBinder);
+
+                setListAdapter(mAdapter);
             } else {
-                ((ServerAdapter) mList.getAdapter()).swapCursor(aData);
+                ((SimpleCursorAdapter) getListAdapter()).swapCursor(aData);
             }
         }
 
         public void onLoaderReset(Loader<Cursor> aLoader) {
-            ((ServerAdapter) mList.getAdapter()).swapCursor(null);
+            ((SimpleCursorAdapter) getListAdapter()).swapCursor(null);
         }
     }
 

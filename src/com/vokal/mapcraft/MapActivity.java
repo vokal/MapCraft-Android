@@ -46,7 +46,7 @@ public class MapActivity extends SherlockFragmentActivity implements ActionBar.O
 
     private NavLoaderManager mNavManager;
 
-    Server mServer = new Server("TESET", "http://s3-us-west-2.amazonaws.com/vokal-minecraft/VOKAL");
+    Server mServer;
     private SpinnerAdapter mAdapter;
     private MapFragment mMap;
 
@@ -69,6 +69,8 @@ public class MapActivity extends SherlockFragmentActivity implements ActionBar.O
         } else {
             mMap = (MapFragment) frag;
         }
+
+        mServer = (Server) getIntent().getParcelableExtra(Server.TAG);
 
         mNavManager = new NavLoaderManager();
         getSupportLoaderManager().initLoader(LOADER_NAV_LIST, null, mNavManager);
