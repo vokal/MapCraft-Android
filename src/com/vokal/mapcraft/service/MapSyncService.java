@@ -1,20 +1,12 @@
 package com.vokal.mapcraft.service;
 
 import android.app.Service;
-import android.content.*;
-import android.os.Binder;
-import android.os.Bundle;
-import android.os.Handler;
-import android.os.IBinder;
-import android.os.Message;
-import android.os.Messenger;
-import android.os.RemoteException;
-import android.preference.PreferenceManager;
+import android.content.Context;
+import android.content.Intent;
+import android.os.*;
 import android.util.Log;
-import android.widget.Toast;
 
-import java.util.*;
-import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 
 import com.vokal.mapcraft.models.Server;
 
@@ -24,13 +16,14 @@ public class MapSyncService extends Service {
     public static final int MSG_REGISTER_CLIENT     = 0;
     public static final int MSG_UNREGISTER_CLIENT   = 1;
     public static final int MSG_FETCH_CONFIG        = 2;
+    public static final int MSG_FETCH_MARKERS       = 3;
 
     private static final ArrayList<Messenger> sClients = new ArrayList<Messenger>();
     private static final MessageHandler sHandler       = new MessageHandler();
     private static Messenger sMessenger   = new Messenger(sHandler);
-    
+
     private static Context sContext;
-    
+
     @Override
     public IBinder onBind(Intent intent) {
         sContext = this;
@@ -43,7 +36,7 @@ public class MapSyncService extends Service {
         return Service.START_STICKY;
     }
 
-    public static class MessageHandler extends Handler { 
+    public static class MessageHandler extends Handler {
         @Override
         public void handleMessage(Message aMsg) {
             switch (aMsg.what) {
@@ -56,6 +49,9 @@ public class MapSyncService extends Service {
                 case MSG_FETCH_CONFIG:
                     fetchConfig((Server) aMsg.obj);
                     break;
+                case MSG_FETCH_MARKERS:
+                    fetchMarkers((Server) aMsg.obj);
+                    break;
             }
         }
     }
@@ -67,7 +63,7 @@ public class MapSyncService extends Service {
     private static synchronized void unregisterClient(Message aMsg) {
         sClients.remove(aMsg.replyTo);
     }
-    
+
     private static synchronized void sendMessage(int aMsg, int aArg) {
         for (Messenger client : sClients) {
             try {
@@ -78,13 +74,31 @@ public class MapSyncService extends Service {
             }
         }
     }
-    
+
     private static void fetchConfig(final Server aServer) {
         new Thread() {
+            @Override
             public void run() {
                 try {
                     System.out.println("HEHRHRHEHRHERHHEHRHE");
                     aServer.setup(sContext);
+                    Message msg = Message.obtain(sHandler, MSG_FETCH_MARKERS);
+                    msg.obj = aServer;
+                    sMessenger.send(msg);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }.start();
+    }
+
+    private static void fetchMarkers(final Server aServer) {
+        new Thread() {
+            @Override
+            public void run() {
+                try {
+                    Log.d(TAG, "FETCHING MARKERS");
+                    aServer.fetchMarkers(sContext);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }

@@ -2,21 +2,16 @@ package com.vokal.mapcraft;
 
 import android.content.*;
 import android.os.*;
-import android.view.Window;
+import android.support.v4.app.*;
+import android.support.v4.content.Loader;
 import android.widget.SpinnerAdapter;
 
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
-import android.support.v4.app.LoaderManager;
-import android.support.v4.content.CursorLoader;
-import android.support.v4.content.Loader;
-
-import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.app.ActionBar;
+import com.actionbarsherlock.app.SherlockFragmentActivity;
 
 import com.vokal.mapcraft.models.*;
-import com.vokal.mapcraft.service.*;
+import com.vokal.mapcraft.service.MapServiceConnection;
+import com.vokal.mapcraft.service.MapSyncService;
 import com.vokal.mapcraft.widget.TileSetNavAdapter;
 
 public class MapActivity extends SherlockFragmentActivity implements ActionBar.OnNavigationListener {
@@ -28,6 +23,11 @@ public class MapActivity extends SherlockFragmentActivity implements ActionBar.O
         @Override
         public void handleMessage(Message aMsg) {
             switch (aMsg.what) {
+                case MapSyncService.MSG_FETCH_CONFIG:
+                    Message msg = Message.obtain(null, MapSyncService.MSG_FETCH_MARKERS);
+                    msg.obj = mServer;
+                    mService.send(msg);
+                    break;
                 default:
                     super.handleMessage(aMsg);
             }
@@ -103,10 +103,12 @@ public class MapActivity extends SherlockFragmentActivity implements ActionBar.O
     }
 
     private class NavLoaderManager implements LoaderManager.LoaderCallbacks<SpinnerAdapter> {
+        @Override
         public Loader<SpinnerAdapter> onCreateLoader(int aId, Bundle aArgs) {
             return new WorldTilesetNavLoader(MapActivity.this, mServer, mMap.getTileSet());
         }
 
+        @Override
         public void onLoadFinished(Loader<SpinnerAdapter> aLoader, SpinnerAdapter aData) {
             if (aData != null) {
                 mAdapter = aData;
@@ -115,11 +117,13 @@ public class MapActivity extends SherlockFragmentActivity implements ActionBar.O
             }
         }
 
+        @Override
         public void onLoaderReset(Loader<SpinnerAdapter> aLoader) {
             mAdapter = null;
         }
     }
 
+    @Override
     public boolean onNavigationItemSelected(int aPos, long aId) {
         if (mAdapter != null) {
             TileSet t = ((TileSetNavAdapter) mAdapter).getItem(aPos);

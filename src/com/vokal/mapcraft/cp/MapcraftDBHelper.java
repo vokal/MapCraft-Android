@@ -8,14 +8,15 @@ import android.util.Log;
 import com.vokal.mapcraft.models.*;
 
 public class MapcraftDBHelper extends SQLiteOpenHelper {
-    
+
     private static final String TAG = MapcraftDBHelper.class.getSimpleName();
 
     private static final String DATABASE_NAME = "mapcraft.db";
-    private static int DATABASE_VERSION       = 1;
+    private static int DATABASE_VERSION       = 7;
 
-    public static final String TABLE_SERVER   = "server";
-    public static final String TABLE_TILESET = "tileset";
+    public static final String TABLE_SERVER      = "server";
+    public static final String TABLE_TILESET     = "tileset";
+    public static final String TABLE_MARKERS     = "markers";
 
     MapcraftDBHelper(Context aContext) {
         super(aContext, DATABASE_NAME, null, DATABASE_VERSION);
@@ -34,21 +35,37 @@ public class MapcraftDBHelper extends SQLiteOpenHelper {
 
         aDb.execSQL(
             "CREATE TABLE " + TABLE_TILESET + " (" +
-                TileSet.ID           + " INTEGER PRIMARY KEY AUTOINCREMENT," + 
-                TileSet.SERVER_URL   + " VARCHAR," +
-                TileSet.WORLD_NAME   + " VARCHAR," + 
-                TileSet.NAME         + " VARCHAR," + 
-                TileSet.BASE         + " VARCHAR," + 
-                TileSet.PATH         + " VARCHAR," + 
-                TileSet.EXT          + " VARCHAR," + 
-                TileSet.BG_COLOR     + " VARCHAR," + 
-                TileSet.MIN_ZOOM     + " INTEGER," + 
-                TileSet.MAX_ZOOM     + " INTEGER," + 
-                TileSet.DEFAULT_ZOOM + " INTEGER," + 
-                " UNIQUE (" + TileSet.SERVER_URL + ", " + TileSet.WORLD_NAME + ", " + TileSet.NAME + ")" +
-            ");"
-        );
-            
+                    TileSet.ID           + " INTEGER PRIMARY KEY AUTOINCREMENT," +
+                    TileSet.SERVER_URL   + " VARCHAR," +
+                    TileSet.WORLD_NAME   + " VARCHAR," +
+                    TileSet.NAME         + " VARCHAR," +
+                    TileSet.BASE         + " VARCHAR," +
+                    TileSet.PATH         + " VARCHAR," +
+                    TileSet.EXT          + " VARCHAR," +
+                    TileSet.BG_COLOR     + " VARCHAR," +
+                    TileSet.MIN_ZOOM     + " INTEGER," +
+                    TileSet.MAX_ZOOM     + " INTEGER," +
+                    TileSet.DEFAULT_ZOOM + " INTEGER," +
+                    TileSet.TILE_SIZE    + " INTEGER," +
+                    TileSet.NORTH_DIR    + " INTEGER, " +
+                    " UNIQUE (" + TileSet.SERVER_URL + ", " + TileSet.WORLD_NAME + ", " + TileSet.NAME + ")" +
+                    ");"
+                );
+
+        aDb.execSQL(
+            "CREATE TABLE " + TABLE_MARKERS + " (" +
+                    OverviewerMarker.ID          + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                    OverviewerMarker.WORLD       + " VARCHAR, " +
+                    OverviewerMarker.GROUP       + " VARCHAR, " +
+                    OverviewerMarker.ICON        + " VARCHAR, " +
+                    OverviewerMarker.TEXT        + " VARCHAR, " +
+                    OverviewerMarker.X           + " INTEGER, " +
+                    OverviewerMarker.Y           + " INTEGER, " +
+                    OverviewerMarker.Z           + " INTEGER"  +
+                    ");"
+                );
+
+
     }
 
     @Override
@@ -57,6 +74,7 @@ public class MapcraftDBHelper extends SQLiteOpenHelper {
 
         aDb.execSQL("DROP TABLE IF EXISTS " + TABLE_SERVER);
         aDb.execSQL("DROP TABLE IF EXISTS " + TABLE_TILESET);
+        aDb.execSQL("DROP TABLE IF EXISTS " + TABLE_MARKERS);
 
         onCreate(aDb);
     }

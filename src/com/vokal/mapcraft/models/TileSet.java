@@ -1,10 +1,10 @@
 package com.vokal.mapcraft.models;
 
 import android.content.*;
-import android.database.*;
+import android.database.Cursor;
 import android.net.Uri;
 
-import org.json.*;
+import org.json.JSONObject;
 import org.osmdroid.tileprovider.MapTile;
 
 import com.vokal.mapcraft.cp.MapcraftContentProvider;
@@ -23,13 +23,24 @@ public abstract class TileSet {
     public static final String MIN_ZOOM     = "tileset_min_zoom";
     public static final String MAX_ZOOM     = "tileset_max_zoom";
     public static final String DEFAULT_ZOOM = "tileset_default_zoom";
+    public static final String TILE_SIZE    = "tileset_tilesize";
+    public static final String NORTH_DIR    = "tileset_north_direction";
     public static final String[] ALL        = new String[] {
         ID, SERVER_URL, WORLD_NAME, NAME, BASE, PATH, EXT, BG_COLOR,
-        MIN_ZOOM, MAX_ZOOM, DEFAULT_ZOOM
+        MIN_ZOOM, MAX_ZOOM, DEFAULT_ZOOM, TILE_SIZE, NORTH_DIR
     };
 
+    public enum NorthDirection {
+        UPPER_LEFT, UPPER_RIGHT, LOWER_RIGHT, LOWER_LEFT
+    }
+
+    private NorthDirection mNorthDirection = NorthDirection.UPPER_LEFT;
+
+
     public static final Uri CONTENT_URI = Uri.parse("content://" +
-        MapcraftContentProvider.AUTHORITY + "/" + MapcraftDBHelper.TABLE_TILESET);
+            MapcraftContentProvider.AUTHORITY + "/" + MapcraftDBHelper.TABLE_TILESET);
+
+
 
     private int mId = -1;
     private String mServerUrl;
@@ -42,9 +53,10 @@ public abstract class TileSet {
     private int mMinZoom;
     private int mMaxZoom;
     private int mDefaultZoom;
+    private int mTileSize;
 
-    TileSet() {
-    }
+
+    TileSet() { }
 
     TileSet(JSONObject aObj) throws Exception {
         mWorldName = aObj.getString("world");
@@ -58,7 +70,7 @@ public abstract class TileSet {
     public String getServerUrl() {
         return mServerUrl;
     }
-    
+
     public void setServerUrl(final String aServerUrl) {
         mServerUrl = aServerUrl;
     }
@@ -69,6 +81,10 @@ public abstract class TileSet {
 
     public String getName() {
         return mName;
+    }
+
+    public String getRenderSet() {
+        return mPath;
     }
 
     public String getBaseUrl() {
@@ -84,6 +100,14 @@ public abstract class TileSet {
 
     public abstract String getPreviewTile();
     public abstract String getPathForTile(final MapTile aTile);
+
+    public int getTileSize() {
+        return mTileSize;
+    }
+
+    public void setTileSize(int aTileSize) {
+        mTileSize = aTileSize;
+    }
 
     public int getMinZoom() {
         return mMinZoom;
@@ -126,6 +150,7 @@ public abstract class TileSet {
         values.put(EXT, mExt);
         values.put(MIN_ZOOM, mMinZoom);
         values.put(MAX_ZOOM, mMaxZoom);
+        values.put(TILE_SIZE, mTileSize);
 
         return values;
     }
@@ -146,7 +171,7 @@ public abstract class TileSet {
         return result;
     }
 
-    private void setByCursorColumn(final Cursor aCursor, final String aName, final int index) {
+    protected void setByCursorColumn(final Cursor aCursor, final String aName, final int index) {
         if (aName.equals(ID)) {
             mId = aCursor.getInt(index);
         } else if (aName.equals(SERVER_URL)) {
@@ -163,6 +188,8 @@ public abstract class TileSet {
             mMinZoom = aCursor.getInt(index);
         } else if (aName.equals(MAX_ZOOM)) {
             mMaxZoom = aCursor.getInt(index);
+        } else if (aName.equals(TILE_SIZE)) {
+            mTileSize = aCursor.getInt(index);
         }
     }
 
@@ -188,6 +215,7 @@ public abstract class TileSet {
         builder.append("    ").append("Name:       ").append(mName).append("\n");
         builder.append("    ").append("Path:       ").append(mPath).append("\n");
         builder.append("    ").append("Ext:        ").append(mExt).append("\n");
+        builder.append("    ").append("Tile Size:  ").append(mTileSize).append("\n");
         return builder.toString();
     }
 }
