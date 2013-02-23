@@ -23,13 +23,16 @@
         android:icon="@drawable/ic_launcher"
         android:theme="@style/Theme.mapcraft"
         android:name="MapCraftApplication">
-        <activity android:name="MapActivity"
+        <activity android:name="ServerActivity"
                   android:label="@string/app_name">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+	<activity android:name="MapActivity"
+	    android:theme="@style/Theme.mapcraft.Overlay"
+	/>
 	<service android:name="org.andnav.osm.services.OpenStreetMapTileProviderService"
                  android:process=":remote"
                  android:label="OpenStreetMapTileProviderService">

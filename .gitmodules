@@ -1,3 +1,6 @@
 [submodule "ActionBarSherlock"]
 	path = ActionBarSherlock
 	url = git://github.com/JakeWharton/ActionBarSherlock.git
+[submodule "NineOldAndroids"]
+	path = NineOldAndroids
+	url = git://github.com/JakeWharton/NineOldAndroids.git

@@ -24,10 +24,11 @@ public class MapcraftDBHelper extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase aDb) {
         aDb.execSQL(
-            "CREATE TABLE " + TABLE_SERVER + " (" +
-                Server.ID   + " INTEGER PRIMARY KEY AUTOINCREMENT," + 
-                Server.URL  + " VARCHAR UNIQUE," +
-                Server.NAME + " VARCHAR" +
+            "CREATE TABLE " + TABLE_SERVER                          + " (" + 
+            Server.ID       + " INTEGER PRIMARY KEY AUTOINCREMENT," + 
+            Server.URL      + " VARCHAR UNIQUE,"                    + 
+            Server.NAME     + " VARCHAR,"                           + 
+            Server.PREVIEW  + " VARCHAR"                            + 
             ");"
         );
 

@@ -82,6 +82,7 @@ public abstract class TileSet {
         return mExt;
     }
 
+    public abstract String getPreviewTile();
     public abstract String getPathForTile(final MapTile aTile);
 
     public int getMinZoom() {
