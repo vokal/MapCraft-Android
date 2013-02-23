@@ -1,6 +1,7 @@
 package com.vokal.mapcraft.models;
 
 import android.content.*;
+import android.os.*;
 import android.database.*;
 import android.net.Uri;
 
@@ -12,7 +13,9 @@ import com.vokal.network.NetworkResponse;
 import com.vokal.mapcraft.cp.MapcraftContentProvider;
 import com.vokal.mapcraft.cp.MapcraftDBHelper;
 
-public class Server {
+public class Server implements Parcelable {
+
+    public static final String TAG = "SERVER";
 
     public static final String ID = "_id";
     public static final String NAME = "name";
@@ -142,4 +145,33 @@ public class Server {
         String out = aJSFile.replaceAll(REGEX_FIND, "{").replace("};", "}");
         return new JSONObject(out);
     }
+
+    public int describeContents() {
+         return 0;
+     }
+
+     public void writeToParcel(Parcel out, int flags) {
+         out.writeInt(mId);
+         out.writeString(mUrl);
+         out.writeString(mPreview);
+         out.writeString(mName);
+     }
+
+     public static final Parcelable.Creator<Server> CREATOR
+             = new Parcelable.Creator<Server>() {
+         public Server createFromParcel(Parcel in) {
+             return new Server(in);
+         }
+
+         public Server[] newArray(int size) {
+             return new Server[size];
+         }
+     };
+     
+     private Server(Parcel in) {
+         mId      = in.readInt();
+         mUrl     = in.readString();
+         mPreview = in.readString();
+         mName    = in.readString();
+     }
 }

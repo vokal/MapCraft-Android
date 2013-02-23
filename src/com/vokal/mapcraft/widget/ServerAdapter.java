@@ -12,7 +12,7 @@ import android.support.v4.widget.CursorAdapter;
 import com.vokal.mapcraft.R;
 import com.vokal.mapcraft.models.Server;
 
-public class ServerAdapter extends CursorAdapter implements AdapterView.OnItemClickListener {
+public class ServerAdapter extends CursorAdapter {
     private static final String TAG = "ServerAdapter";
 
     private Context aContext;
@@ -39,10 +39,6 @@ public class ServerAdapter extends CursorAdapter implements AdapterView.OnItemCl
 
         ViewHolder holder = (ViewHolder) aView.getTag();
         holder.title.setText(server.getName());
-    }
-
-    public void onItemClick(AdapterView aListView, View aView, int aPosition, long aId) {
-        // Do nothing here
     }
 
     static class ViewHolder {
