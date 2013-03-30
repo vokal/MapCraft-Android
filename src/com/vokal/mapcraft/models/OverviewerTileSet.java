@@ -11,25 +11,10 @@ public class OverviewerTileSet extends TileSet {
 
     public static final String TAG = "OverviewerTileSet";
 
-    public static final String NORTH_DIR    = "tileset_north_direction";
-
-    public static final String[] ALL        = new String[] {
-        ID, SERVER_URL, WORLD_NAME, NAME, BASE, PATH, EXT, BG_COLOR,
-        MIN_ZOOM, MAX_ZOOM, DEFAULT_ZOOM, TILE_SIZE, NORTH_DIR
-    };
-
-    public enum NorthDirection {
-        UPPER_LEFT, UPPER_RIGHT, LOWER_RIGHT, LOWER_LEFT
-    }
-
-    private NorthDirection mNorthDirection = NorthDirection.UPPER_LEFT;
-
     OverviewerTileSet() { }
 
     public OverviewerTileSet(JSONObject aObj) throws Exception {
-        super(aObj);
-        mNorthDirection = NorthDirection.values()[aObj.getInt("north_direction")];
-        Log.d(TAG, "Constructor: " + this.getName());
+         super(aObj);
     }
 
     public String getPathForTile(final MapTile aTile) {
@@ -51,37 +36,7 @@ public class OverviewerTileSet extends TileSet {
         return builder.append(".").toString();
     }
 
-    @Override
-    protected ContentValues getContentValues() {
-        ContentValues values =  super.getContentValues();
-        values.put(NORTH_DIR, mNorthDirection.ordinal());
-        return values;
-    }
-
-    @Override
-    protected void setByCursorColumn(Cursor aCursor, String aName, int index) {
-        if (aName.equals(NORTH_DIR)) {
-            mNorthDirection = NorthDirection.values()[aCursor.getInt(index)];
-        } else {
-            super.setByCursorColumn(aCursor, aName, index);
-        }
-    }
-
     public String getPreviewTile() {
         return getBaseUrl() + "/base" + getImageExt();
     }
-
-    public NorthDirection getNorthDirection() {
-        return mNorthDirection;
-    }
-
-    @Override
-    public String toString() {
-        String s = super.toString();
-        return s.concat("    ").concat("North Dir:  ").concat(mNorthDirection.name()).concat("\n");
-    }
-
-
-
-
 }

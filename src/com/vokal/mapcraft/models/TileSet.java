@@ -40,8 +40,6 @@ public abstract class TileSet {
     public static final Uri CONTENT_URI = Uri.parse("content://" +
             MapcraftContentProvider.AUTHORITY + "/" + MapcraftDBHelper.TABLE_TILESET);
 
-
-
     private int mId = -1;
     private String mServerUrl;
     private String mWorldName;
@@ -55,7 +53,6 @@ public abstract class TileSet {
     private int mDefaultZoom;
     private int mTileSize;
 
-
     TileSet() { }
 
     TileSet(JSONObject aObj) throws Exception {
@@ -65,6 +62,7 @@ public abstract class TileSet {
         mExt       = aObj.getString("imgextension");
         mMinZoom   = aObj.getInt("minZoom");
         mMaxZoom   = aObj.getInt("maxZoom");
+        mNorthDirection = NorthDirection.values()[aObj.getInt("north_direction")];
     }
 
     public String getServerUrl() {
@@ -121,6 +119,10 @@ public abstract class TileSet {
         return mDefaultZoom;
     }
 
+    public NorthDirection getNorthDirection() {
+        return mNorthDirection;
+    }
+
     public void save(Context aContext) {
         ContentValues values = getContentValues();
 
@@ -151,6 +153,7 @@ public abstract class TileSet {
         values.put(MIN_ZOOM, mMinZoom);
         values.put(MAX_ZOOM, mMaxZoom);
         values.put(TILE_SIZE, mTileSize);
+        values.put(NORTH_DIR, mNorthDirection.ordinal());
 
         return values;
     }
@@ -190,7 +193,9 @@ public abstract class TileSet {
             mMaxZoom = aCursor.getInt(index);
         } else if (aName.equals(TILE_SIZE)) {
             mTileSize = aCursor.getInt(index);
-        }
+        } else if (aName.equals(NORTH_DIR)) {
+            mNorthDirection = NorthDirection.values()[aCursor.getInt(index)];
+	}
     }
 
     @Override
@@ -216,6 +221,7 @@ public abstract class TileSet {
         builder.append("    ").append("Path:       ").append(mPath).append("\n");
         builder.append("    ").append("Ext:        ").append(mExt).append("\n");
         builder.append("    ").append("Tile Size:  ").append(mTileSize).append("\n");
+        builder.append("    ").append("North Dir:  ").append(mNorthDirection.name()).append("\n");
         return builder.toString();
     }
 }

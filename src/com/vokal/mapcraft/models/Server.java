@@ -9,12 +9,14 @@ import java.util.*;
 
 import org.json.*;
 
-import com.vokal.mapcraft.models.OverviewerMarker.MarkerGroup;
 import com.vokal.network.NetworkClient;
 import com.vokal.network.NetworkResponse;
 
+import com.vokal.mapcraft.MapCraftApplication;
+import com.vokal.mapcraft.event.*;
 import com.vokal.mapcraft.cp.MapcraftContentProvider;
 import com.vokal.mapcraft.cp.MapcraftDBHelper;
+import com.vokal.mapcraft.models.OverviewerMarker.MarkerGroup;
 
 public class Server implements Parcelable {
 
@@ -67,7 +69,22 @@ public class Server implements Parcelable {
     }
     
 
-    public void setup(final Context aContext) throws Exception {
+    public void setup(final Context aContext) {
+        MapCraftApplication.BUS.post(ProgressStateEvent.start());
+        new Thread() {
+            @Override
+            public void run() {
+                try {
+                    fetchConfig(aContext);
+                    MapCraftApplication.BUS.post(ProgressStateEvent.end());
+                } catch (Exception e) {
+                    MapCraftApplication.BUS.post(new ExceptionEvent());
+                }
+            }
+        }.start();
+    }
+
+    private void fetchConfig(final Context aContext) throws Exception {
         NetworkClient client = NetworkClient.getInstance();
         NetworkResponse resp = client.get(mUrl + "/overviewerConfig.js");
 

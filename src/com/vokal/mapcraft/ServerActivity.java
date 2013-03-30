@@ -16,28 +16,20 @@ import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
 
+import com.squareup.otto.Subscribe;
+
 import com.vokal.mapcraft.models.Server;
-import com.vokal.mapcraft.service.*;
+import com.vokal.mapcraft.event.ProgressStateEvent;
 
 public class ServerActivity extends SherlockFragmentActivity {    
-
-    private boolean mBound = false;
-    private Messenger mMessenger = new Messenger(new Handler() {
-        @Override
-        public void handleMessage(Message aMsg) {
-            switch (aMsg.what) {
-                default:
-                    super.handleMessage(aMsg);
-            }
-        }
-    });
-    private MapServiceConnection mService = new MapServiceConnection(mMessenger);
 
     @Override
     public void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
+
+        MapCraftApplication.BUS.register(this);
 
         FragmentManager manager = getSupportFragmentManager();
         Fragment frag = manager.findFragmentById(R.id.map_fragment);
@@ -49,28 +41,12 @@ public class ServerActivity extends SherlockFragmentActivity {
         }
     }
 
-    @Override
-    public void onStart() {
-        super.onStart();
-        doBind();
-    }
-
-    @Override
-    public void onStop() {
-        super.onStop();
-        doUnbind();
-    }
-
-    private void doBind() {
-        bindService(new Intent(this, MapSyncService.class), mService, Context.BIND_AUTO_CREATE);
-        mBound = true;
-    }
-
-    private void doUnbind() {
-        if (mBound) {
-            mService.unregister();
-            unbindService(mService);
-            mBound = false;
-        }
+    @Subscribe 
+    public void updateProgress(final ProgressStateEvent aEvent) {
+        runOnUiThread( new Runnable() {
+            public void run() {
+                setSupportProgressBarIndeterminateVisibility(aEvent.isRunning());
+            }
+        });
     }
 }

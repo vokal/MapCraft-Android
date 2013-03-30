@@ -8,14 +8,13 @@ import org.osmdroid.util.GeoPoint;
 import org.osmdroid.views.MapView;
 
 import com.vokal.mapcraft.models.*;
-import com.vokal.mapcraft.models.OverviewerTileSet.NorthDirection;
 
 public abstract class BaseOverviewerOverlay extends BaseMinecraftOverlay {
 
     public static final String  TAG             = "BaseOverviewerOverlay";
 
-    protected   String              mRenderSet;
-    private     NorthDirection      mNorthDirection;
+    protected String mRenderSet;
+    private TileSet.NorthDirection mNorthDirection;
 
     public BaseOverviewerOverlay(
             FragmentActivity aContext,

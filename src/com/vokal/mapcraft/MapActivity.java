@@ -5,44 +5,20 @@ import android.os.*;
 import android.support.v4.app.*;
 import android.support.v4.content.Loader;
 import android.widget.SpinnerAdapter;
+import android.view.Window;
 
 import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.app.SherlockFragmentActivity;
 
+import com.squareup.otto.Subscribe;
+
 import com.vokal.mapcraft.models.*;
-import com.vokal.mapcraft.service.MapServiceConnection;
-import com.vokal.mapcraft.service.MapSyncService;
+import com.vokal.mapcraft.event.ProgressStateEvent;
 import com.vokal.mapcraft.widget.TileSetNavAdapter;
 
 public class MapActivity extends SherlockFragmentActivity implements ActionBar.OnNavigationListener {
     public static final int LOADER_NAV_LIST = 0;
     /** Called when the activity is first created. */
-
-    private boolean mBound = false;
-    private Messenger mMessenger = new Messenger(new Handler() {
-        @Override
-        public void handleMessage(Message aMsg) {
-            switch (aMsg.what) {
-                case MapSyncService.MSG_FETCH_CONFIG:
-                    Message msg = Message.obtain(null, MapSyncService.MSG_FETCH_MARKERS);
-                    msg.obj = mServer;
-                    mService.send(msg);
-                    break;
-                default:
-                    super.handleMessage(aMsg);
-            }
-        }
-    });
-    private MapServiceConnection mService = new MapServiceConnection(mMessenger) {
-        @Override
-        public void onServiceConnected(ComponentName aName, IBinder aBinder) {
-            super.onServiceConnected(aName, aBinder);
-
-            Message msg = Message.obtain(null, MapSyncService.MSG_FETCH_CONFIG);
-            msg.obj = mServer;
-            send(msg);
-        }
-    };
 
     private NavLoaderManager mNavManager;
 
@@ -54,7 +30,10 @@ public class MapActivity extends SherlockFragmentActivity implements ActionBar.O
     public void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
+        requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
         setContentView(R.layout.main);
+
+        MapCraftApplication.BUS.register(this);
 
         getSupportActionBar().setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
@@ -71,35 +50,11 @@ public class MapActivity extends SherlockFragmentActivity implements ActionBar.O
         }
 
         mServer = (Server) getIntent().getParcelableExtra(Server.TAG);
+        mServer.setup(getApplicationContext());
 
         mNavManager = new NavLoaderManager();
         getSupportLoaderManager().initLoader(LOADER_NAV_LIST, null, mNavManager);
 
-    }
-
-    @Override
-    public void onStart() {
-        super.onStart();
-        doBind();
-    }
-
-    @Override
-    public void onStop() {
-        super.onStop();
-        doUnbind();
-    }
-
-    private void doBind() {
-        bindService(new Intent(this, MapSyncService.class), mService, Context.BIND_AUTO_CREATE);
-        mBound = true;
-    }
-
-    private void doUnbind() {
-        if (mBound) {
-            mService.unregister();
-            unbindService(mService);
-            mBound = false;
-        }
     }
 
     private class NavLoaderManager implements LoaderManager.LoaderCallbacks<SpinnerAdapter> {
@@ -136,5 +91,14 @@ public class MapActivity extends SherlockFragmentActivity implements ActionBar.O
         }
 
         return false;
+    }
+
+    @Subscribe 
+    public void updateProgress(final ProgressStateEvent aEvent) {
+        runOnUiThread( new Runnable() {
+            public void run() {
+                setSupportProgressBarIndeterminateVisibility(aEvent.isRunning());
+            }
+        });
     }
 }
