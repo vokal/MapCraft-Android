@@ -110,6 +110,10 @@ public class MapFragment extends SherlockFragment {
         if (aTileSet != null && (mLastTileSet == null || !aTileSet.equals(mLastTileSet))) {
             final ITileSource tileSource = new TileSetTileSource(aTileSet);
             mMap.setTileSource(tileSource);
+            
+            if (mLastTileSet != null && !aTileSet.getWorldName().equals(mLastTileSet.getWorldName())) {
+                mMap.getController().setZoom(0);
+            }
 
             addOverlays(aTileSet);
         }
