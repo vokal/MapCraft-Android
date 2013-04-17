@@ -24,14 +24,11 @@ import com.actionbarsherlock.view.MenuItem;
 import com.vokal.mapcraft.models.Server;
 import com.vokal.mapcraft.widget.*;
 
-public class ServerListFragment extends SherlockListFragment 
-    implements SwipeDismissListViewTouchListener.OnDismissCallback {
+public class ServerListFragment extends SherlockListFragment {
 
     public static final int LOADER_SERVERS = 0;
 
     private ServerLoaderManager mNavManager;
-    
-    SwipeDismissListViewTouchListener mTouchListener;
 
     SimpleCursorAdapter mAdapter;
     SimpleCursorAdapter.ViewBinder mBinder = new SimpleCursorAdapter.ViewBinder() {
@@ -69,12 +66,7 @@ public class ServerListFragment extends SherlockListFragment
     public void onResume() {
         super.onResume();
 
-
-        mTouchListener = new SwipeDismissListViewTouchListener(getListView(), this);
-
         getListView().setBackgroundColor(0xffffffff);
-        getListView().setOnTouchListener(mTouchListener);
-        getListView().setOnScrollListener(mTouchListener.makeScrollListener());
 
         mNavManager = new ServerLoaderManager();
         getLoaderManager().initLoader(LOADER_SERVERS, null, mNavManager);
@@ -92,12 +84,6 @@ public class ServerListFragment extends SherlockListFragment
         }
     }
 
-
-    @Override
-    public void onDismiss(ListView listView, int[] reverseSortedPositions) {
-        for (int position : reverseSortedPositions) {
-        }
-    }
 
     private class ServerLoaderManager implements LoaderManager.LoaderCallbacks<Cursor> {
         public Loader<Cursor> onCreateLoader(int aId, Bundle aArgs) {
